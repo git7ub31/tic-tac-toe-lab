@@ -1,86 +1,111 @@
 /*-------------------------------- Constants --------------------------------*/
-const squareEls = document.querySelector('.sqr')
-const messageEl = documemt.querySelector('#message')
+const squareEls = document.querySelectorAll(".sqr")
+const messageEl = document.querySelector("#message")
+const resetBtnEl = document.querySelector("#reset")
 const winningCombos = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6,7,8],
-    [0,3,6],
-    [1,4,7],
-    [2,5,8],
-    [0,4,8],
-    [2,4,6]
-  ]
-const resentBtnEl = document.querySelector('#reset')
+  [0, 1, 2],
+  [0, 4, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 4, 6],
+  [2, 5, 8],
+  [3, 4, 5],
+  [6, 7, 8],
+]
+
 /*---------------------------- Variables (state) ----------------------------*/
 let board
 let turn
 let winner
 let tie
 
-
 /*------------------------ Cached Element References ------------------------*/
 
 /*-------------------------------- Functions --------------------------------*/
 const init = () => {
-board =['', '', '', '','', '','','','']; //how to show 9 boards?
-turn = 'X';
-winner = false;
-tie = 'false';
-render();
+  board = ["", "", "", "", "", "", "", "", ""] //how to show 9 boards?
+  turn = "X"
+  winner = false
+  tie = false
+  render()
 }
 
-const render =() => {
-updateBoard();
-updateMessage();
+const render = () => {
+  updateBoard()
+  updateMessage()
 }
 
 const updateBoard = () => {
-board.forEach((tile, index) => {
-    squareEls[index].textContent = tile;
-})
+  squareEls.forEach((square, index) => {
+    square.textContent = board[index]
+  })
 }
 
-const updateMessage = (){
-    if (winner === tie) {
-        messageEl.textContent = `it is 2nd players turn`
-    } else if(winner ==='false' && tie ==='true'){
-        messageEl.textContent = `it is a tie!`
-    }
-    else {
-        messageEl.textContent = `now it's ${turn} turn`
-    }
+const updateMessage = () => {
+  if (winner) {
+    messageEl.textContent = `${turn} wins!`
+  } else if (tie) {
+    messageEl.textContent = `it is a tie!`
+  } else {
+    messageEl.textContent = `now it's ${turn} turn`
+  }
 }
 
 const handleClick = (event) => {
-    const tileIndex = event.target.id
-    //unsure about Step6
-
-    playPiece(tileIndex);
+  const tileIndex = event.target.id
+  if (board[tileIndex] !== `` || winner) return
+  playPiece(tileIndex)
+  checkForWinner()
+  checkForTie()
+  switchPlayerTurn()
+  render()
 }
 
-const playPiece = (index)=> {
-    board[index] = turn;
-    console.log(board);
+const playPiece = (index) => {
+  board[index] = turn
+  console.log(board)
 }
 
 const checkForWinner = () => {
-winningCombos.forEach(combo => {
-    //unsure about this step
-})
+  for (let i = 0; i < winningCombos.length; i++) {
+    let combo = winningCombos[i]
+    if (
+      board[combo[0]] !== `` &&
+      board[combo[0]] === board[combo[1]] &&
+      board[combo[0]] === board[combo[2]]
+    ) {
+      winner = true
+      break
+    }
+  }
 }
 
 const checkForTie = () => {
-    if  ();
+  if (winner) return
+
+  tie = true
+  for (let i = 0; i < board.length; i++) {
+    if (board[i] === ``) {
+      tie = false
+      break
+    }
+  }
 }
 
 const switchPlayerTurn = () => {
-
+  if (winner) {
+    return
+  }
+  if (turn === `O`) {
+    turn = `X`
+  } else {
+    turn = `O`
+  }
 }
-
+init()
 /*----------------------------- Event Listeners -----------------------------*/
-squareEls.forEach(tile => tile {
-    tile.addEventListener('click',play)
+squareEls.forEach((square) => {
+  square.addEventListener(`click`, handleClick)
 })
-resentBtnEl.addEventListener('click',init)
 
+resetBtnEl.addEventListener(`click`, init)
